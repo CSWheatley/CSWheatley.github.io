@@ -39,5 +39,5 @@ body{font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue"
 code{background:#f1f1f1;padding:0.15rem 0.3rem;border-radius:3px;font-size:0.95rem}
 
 /* Front-page banner */
-.front-banner img{width:100%;height:auto;display:block;max-height:520px;object-fit:cover;opacity:0.6;filter:grayscale(100%);-webkit-filter:grayscale(100%)}
+.front-banner img{width:100%;height:auto;display:block;max-height:520px;object-fit:cover;opacity:1;filter:grayscale(100%);-webkit-filter:grayscale(100%)}
 .front-banner{overflow:hidden}
