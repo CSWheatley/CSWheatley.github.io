@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gallery — CS Wheatley</title>
+    <link rel="stylesheet" href="/css/styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">CS Wheatley</a>
+        <nav class="main-nav">
+          <a href="/">Home</a>
+          <a href="/gallery/">Gallery</a>
+          <a href="/#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <h1>Gallery</h1>
+
+      <div class="grid" style="margin-top:1rem">
+        <a href="/assets/thumb1.svg" class="thumb" target="_blank" rel="noopener">
+          <img src="/assets/thumb1.svg" alt="Artwork 1">
+        </a>
+        <a href="/assets/thumb2.svg" class="thumb" target="_blank" rel="noopener">
+          <img src="/assets/thumb2.svg" alt="Artwork 2">
+        </a>
+        <a href="/assets/thumb3.svg" class="thumb" target="_blank" rel="noopener">
+          <img src="/assets/thumb3.svg" alt="Artwork 3">
+        </a>
+      </div>
+
+      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab. Replace these placeholders with your photos or exports.</p>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <small>&copy; <span id="year"></span> CS Wheatley</small>
+      </div>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </body>
+</html>

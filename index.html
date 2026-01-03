@@ -1,12 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
-	<head>
-		<title>CSWheatley</title>
-	</head>
-	
-	<body>
-		<h1>Hello World!</h1>
-	</body>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>CS Wheatley — Portfolio</title>
+	<link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+	<header class="site-header">
+		<div class="container header-inner">
+			<a class="brand" href="/">CS Wheatley</a>
+			<nav class="main-nav">
+				<a href="/">Home</a>
+				<a href="/gallery/">Gallery</a>
+				<a href="#contact">Contact</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<section class="front-banner">
+			<img src="/RCA%20MA/Banner.jpg" alt="Banner">
+		</section>
+
+		<section class="hero">
+			<div class="container hero-inner">
+				<h1 class="hero-title">Work in material, space and form</h1>
+				<p class="hero-sub">Selected sculptures, installations and projects.</p>
+				<p><a class="btn" href="/gallery/">View Gallery</a></p>
+			</div>
+		</section>
+
+		<section class="intro container">
+			<h2>About</h2>
+			<p>
+				This is a starter website
+			</p>
+		</section>
+
+		<section class="preview container">
+			<h2>Recent Work</h2>
+			<div class="grid">
+				<a class="thumb" href="/gallery/">
+					<img src="/assets/thumb1.svg" alt="Artwork 1">
+				</a>
+				<a class="thumb" href="/gallery/">
+					<img src="/assets/thumb2.svg" alt="Artwork 2">
+				</a>
+				<a class="thumb" href="/gallery/">
+					<img src="/assets/thumb3.svg" alt="Artwork 3">
+				</a>
+			</div>
+		</section>
+
+		<section id="contact" class="contact container">
+			<h2>Contact</h2>
+			<p>Email: <a href="mailto:artist@example.com">artist@example.com</a></p>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<small>&copy; <span id="year"></span> CS Wheatley</small>
+		</div>
+	</footer>
+
+	<script>
+		document.getElementById('year').textContent = new Date().getFullYear();
+	</script>
+</body>
 
 </html>
