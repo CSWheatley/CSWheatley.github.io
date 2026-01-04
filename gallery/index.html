@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Gallery — Craig Wheatley</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+      /* Modal styles (shared with RCA modal) */
+      .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
+      .modal[aria-hidden="false"]{display:flex}
+      .modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7)}
+      .modal-panel{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem;max-width:90vw;max-height:90vh;padding:0.5rem}
+      .modal-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;padding:0.5rem;border-radius:4px;overflow:hidden}
+      .modal-inner img{max-width:100%;max-height:80vh;height:auto;width:auto;display:block}
+      .modal-caption{padding-top:0.5rem;color:#333;font-size:0.95rem}
+      .modal-close,.modal-prev,.modal-next{background:rgba(255,255,255,0.95);border:0;padding:0.25rem 0.5rem;border-radius:4px;cursor:pointer;font-size:1.25rem}
+      .modal-prev,.modal-next{height:40px;width:40px;display:flex;align-items:center;justify-content:center}
+      @media (max-width:700px){
+        .modal-panel{max-width:100%;max-height:100%;padding:0.25rem}
+        .modal-inner img{max-height:60vh}
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -23,7 +39,7 @@
 
       <div class="grid" style="margin-top:1rem">
         <figure class="thumb">
-          <a href="/gallery/installation/" aria-label="Open Museum and Gallery work 1997-1999 page" aria-describedby="cap-museum">
+          <a href="/gallery/?viewer=installation" class="open-installation-gallery" aria-label="Open Museum and Gallery work 1997-1999 gallery" aria-describedby="cap-museum">
             <img src="/gallery/Gallery%20Installation.jpeg" alt="Museum and Gallery work 1997-1999">
           </a>
           <figcaption id="cap-museum">Museum and Gallery work 1997-1999</figcaption>
@@ -44,7 +60,21 @@
         </figure>
       </div>
 
-      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab. Replace these placeholders with your photos or exports.</p>
+      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab, or click the Installation thumbnail to view the four artwork placeholders as a sequence.</p>
+
+      <!-- Installation modal gallery -->
+      <div id="installation-modal" class="modal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Installation series viewer">
+          <button class="modal-close" aria-label="Close gallery">✕</button>
+          <button class="modal-prev" aria-label="Previous image">‹</button>
+          <div class="modal-inner">
+            <img id="installation-modal-image" src="" alt="">
+            <p id="installation-modal-caption" class="modal-caption"></p>
+          </div>
+          <button class="modal-next" aria-label="Next image">›</button>
+        </div>
+      </div>
     </main>
 
     <footer class="site-footer">
@@ -53,6 +83,69 @@
       </div>
     </footer>
 
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script>
+      // Installation modal gallery
+      (function(){
+        const slides = [
+          {src:'/gallery/Gallery1.jpeg', caption:'Artwork placeholder 1'},
+          {src:'/gallery/Gallery2.jpeg', caption:'Artwork placeholder 2'},
+          {src:'/gallery/Gallery3.jpeg', caption:'Artwork placeholder 3'},
+          {src:'/gallery/Gallery4.jpeg', caption:'Artwork placeholder 4'}
+        ];
+        slides.forEach(s=>{ const i=new Image(); i.src=s.src; });
+
+        const modal = document.getElementById('installation-modal');
+        const imgEl = document.getElementById('installation-modal-image');
+        const capEl = document.getElementById('installation-modal-caption');
+        const closeBtn = modal && modal.querySelector('.modal-close');
+        const prevBtn = modal && modal.querySelector('.modal-prev');
+        const nextBtn = modal && modal.querySelector('.modal-next');
+        let index = 0;
+
+        function show(i){
+          index = (i + slides.length) % slides.length;
+          const s = slides[index];
+          imgEl.src = s.src;
+          imgEl.alt = s.caption;
+          capEl.textContent = s.caption;
+          modal.setAttribute('aria-hidden','false');
+          document.body.style.overflow = 'hidden';
+        }
+        function hide(){
+          modal.setAttribute('aria-hidden','true');
+          document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.open-installation-gallery').forEach(function(el){
+          el.addEventListener('click', function(e){
+            // If left-click or the default prevented, show modal. For middle-click / new tab, the URL includes ?viewer=installation and will open modal on load.
+            if(e.button === 0){ // left click
+              e.preventDefault();
+              show(0);
+            }
+          });
+        });
+
+        // Open modal automatically if ?viewer=installation is present (useful for opening in new tab)
+        if(new URLSearchParams(window.location.search).get('viewer') === 'installation'){
+          // Wait a tick for images to load
+          setTimeout(function(){ show(0); }, 60);
+        }
+
+        if(closeBtn) closeBtn.addEventListener('click', hide);
+        if(prevBtn) prevBtn.addEventListener('click', function(){ show(index-1); });
+        if(nextBtn) nextBtn.addEventListener('click', function(){ show(index+1); });
+        modal && modal.querySelector('.modal-backdrop') && modal.querySelector('.modal-backdrop').addEventListener('click', hide);
+        document.addEventListener('keydown', function(e){
+          if(modal.getAttribute('aria-hidden')==='false'){
+            if(e.key === 'Escape') hide();
+            if(e.key === 'ArrowLeft') show(index-1);
+            if(e.key === 'ArrowRight') show(index+1);
+          }
+        });
+
+      })();
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>

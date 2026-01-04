@@ -6,18 +6,34 @@
     <title>RCA MA work — Craig Wheatley</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-      /* Viewport-based fixed height to avoid cropping; images retain proportions */
-      .artwork-overview.full-images .artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
-      /* Set a target height based on viewport with a sensible max to avoid huge images */
-      .artwork-overview.full-images .artwork-grid .thumb{height:min(60vh,800px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-      .artwork-overview.full-images .thumb img{height:100%;width:auto;display:block;object-fit:contain}
-      .artwork-overview.full-images figcaption{padding:0.5rem;background:transparent}
+      /* Balanced two-column grid with equalized image heights and aligned captions */
+      .artwork-overview.full-images .artwork-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;align-items:stretch}
 
-      /* Small screens: remove fixed height so content flows naturally */
-      @media (max-width:700px){
+      /* Each thumb is a column flex container; .image-wrap centers the image vertically and caption sits at the bottom. */
+      .artwork-overview.full-images .artwork-grid .thumb{height:min(60vh,800px);display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;padding:0}
+      /* Reserve space for figcaption so images can fill the remaining height and be equal */
+      .artwork-overview.full-images figcaption{padding:0.5rem;background:transparent;text-align:center;min-height:48px}
+      .artwork-overview.full-images .thumb .image-wrap{height:calc(100% - 48px);display:flex;align-items:center;justify-content:center;width:100%}
+      .artwork-overview.full-images .thumb img{height:100%;width:auto;max-width:100%;display:block;margin:0 auto;object-fit:contain}
+
+      /* Modal styles */
+      .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000}
+      .modal[aria-hidden="false"]{display:flex}
+      .modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7)}
+      .modal-panel{position:relative;z-index:2;display:flex;align-items:center;gap:0.5rem;max-width:90vw;max-height:90vh;padding:0.5rem}
+      .modal-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;padding:0.5rem;border-radius:4px;overflow:hidden}
+      .modal-inner img{max-width:100%;max-height:80vh;height:auto;width:auto;display:block}
+      .modal-caption{padding-top:0.5rem;color:#333;font-size:0.95rem}
+      .modal-close,.modal-prev,.modal-next{background:rgba(255,255,255,0.95);border:0;padding:0.25rem 0.5rem;border-radius:4px;cursor:pointer;font-size:1.25rem}
+      .modal-prev,.modal-next{height:40px;width:40px;display:flex;align-items:center;justify-content:center}
+
+      /* Small screens: stack and remove fixed heights so content flows naturally */
+      @media (max-width:900px){
         .artwork-overview.full-images .artwork-grid{grid-template-columns:1fr}
         .artwork-overview.full-images .artwork-grid .thumb{height:auto}
-        .artwork-overview.full-images .thumb img{height:auto;width:100%}
+        .artwork-overview.full-images .thumb img{max-height:none;height:auto;width:100%}
+        .modal-panel{max-width:100%;max-height:100%;padding:0.25rem}
+        .modal-inner img{max-height:60vh}
       }
     </style>
   </head>
@@ -41,12 +57,18 @@
         <div class="artwork-grid">
 
           <figure class="thumb">
-            <img src="/RCA%20MA/Battle%20of%20San%20RamoanoSt%20Fagans%20Part%201%20to%203.jpeg" alt="Battle of San RamoanoSt Fagans Part 1 to 3" style="width:100%;height:auto;display:block">
+            <a href="#" class="open-gallery" data-index="0" aria-label="Open Battle series">
+              <div class="image-wrap">
+                <img src="/RCA%20MA/Battle%20of%20San%20RamoanoSt%20Fagans%20Part%201%20to%203.jpeg" alt="Battle of San RamoanoSt Fagans Part 1 to 3" style="max-width:100%;display:block">
+              </div>
+            </a>
             <figcaption>Battle of San RamoanoSt Fagans Part 1 to 3</figcaption>
           </figure>
 
           <figure class="thumb">
-            <img src="/RCA%20MA/Activity.jpeg" alt="Activity" style="width:100%;height:auto;display:block">
+            <div class="image-wrap">
+              <img id="activity-thumb" src="/RCA%20MA/Activity.jpeg" alt="Activity" style="max-width:100%;display:block;cursor:pointer">
+            </div>
             <figcaption>Activity</figcaption>
           </figure>
 
@@ -58,7 +80,21 @@
         </div>
       </section>
 
-      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab.</p>
+      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab, or click the Battle image to view the three-part sequence.</p>
+
+      <!-- Modal gallery -->
+      <div id="gallery-modal" class="modal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Battle series viewer">
+          <button class="modal-close" aria-label="Close gallery">✕</button>
+          <button class="modal-prev" aria-label="Previous image">‹</button>
+          <div class="modal-inner">
+            <img id="modal-image" src="" alt="">
+            <p id="modal-caption" class="modal-caption"></p>
+          </div>
+          <button class="modal-next" aria-label="Next image">›</button>
+        </div>
+      </div>
     </main>
 
     <footer class="site-footer">
@@ -68,7 +104,95 @@
     </footer>
 
     <script>
-      // Use CSS viewport-based heights to avoid cropping; JS not required.
+      // Lightweight modal/gallery for the Battle series
+      (function(){
+        const slides = [
+          {src:'/RCA%20MA/Battle%20of%20San%20RomanoSt%20Fagans%20Part1.jpeg', caption:'Battle of San Romano St Fagans — Part 1'},
+          {src:'/RCA%20MA/Battle%20of%20San%20RomanoSt%20Fagans%20Part2.jpeg', caption:'Battle of San Romano St Fagans — Part 2'},
+          {src:'/RCA%20MA/Battle%20of%20San%20RamanoSt%20Fagans%20Part3.jpeg', caption:'Battle of San Romano St Fagans — Part 3'}
+        ];
+        // Preload images for smoother navigation
+        slides.forEach(s=>{ const i=new Image(); i.src=s.src; });
+
+        const modal = document.getElementById('gallery-modal');
+        const imgEl = document.getElementById('modal-image');
+        const capEl = document.getElementById('modal-caption');
+        const closeBtn = modal && modal.querySelector('.modal-close');
+        const prevBtn = modal && modal.querySelector('.modal-prev');
+        const nextBtn = modal && modal.querySelector('.modal-next');
+        let index = 0;
+
+        var singleMode = false;
+        function show(i){
+          singleMode = false;
+          prevBtn && (prevBtn.style.display='');
+          nextBtn && (nextBtn.style.display='');
+
+          index = (i + slides.length) % slides.length;
+          const s = slides[index];
+          imgEl.src = s.src;
+          imgEl.alt = s.caption;
+          capEl.textContent = s.caption;
+          modal.setAttribute('aria-hidden','false');
+          document.body.style.overflow = 'hidden';
+        }
+        function showSingle(src, caption){
+          singleMode = true;
+          prevBtn && (prevBtn.style.display='none');
+          nextBtn && (nextBtn.style.display='none');
+
+          imgEl.src = src;
+          imgEl.alt = caption;
+          capEl.textContent = caption;
+          modal.setAttribute('aria-hidden','false');
+          document.body.style.overflow = 'hidden';
+        }
+        function hide(){
+          singleMode = false;
+          modal.setAttribute('aria-hidden','true');
+          document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.open-gallery').forEach(function(el){
+          el.addEventListener('click', function(e){
+            e.preventDefault();
+            const i = parseInt(el.getAttribute('data-index')||0,10);
+            show(i);
+          });
+        });
+
+        // Activity thumbnail opens the modal in the same tab
+        var activityThumb = document.getElementById('activity-thumb');
+        if(activityThumb){
+          activityThumb.addEventListener('click', function(e){
+            if(e.button !== 0) return; // only left-click
+            e.preventDefault();
+            showSingle('/RCA%20MA/Activity.jpeg', 'Activity');
+          });
+        }
+
+        if(closeBtn) closeBtn.addEventListener('click', hide);
+        if(prevBtn) prevBtn.addEventListener('click', function(){ show(index-1); });
+        if(nextBtn) nextBtn.addEventListener('click', function(){ show(index+1); });
+
+        // close clicking backdrop
+        modal && modal.querySelector('.modal-backdrop') && modal.querySelector('.modal-backdrop').addEventListener('click', hide);
+
+        // keyboard support
+        document.addEventListener('keydown', function(e){
+          if(modal.getAttribute('aria-hidden')==='false'){
+            if(e.key === 'Escape') hide();
+            if(e.key === 'ArrowLeft') show(index-1);
+            if(e.key === 'ArrowRight') show(index+1);
+          }
+        });
+
+        // graceful image fallback: if an image fails to load, keep the existing combined image
+        imgEl && imgEl.addEventListener('error', function(){
+          imgEl.src = '/RCA%20MA/Battle%20of%20San%20RamoanoSt%20Fagans%20Part%201%20to%203.jpeg';
+        });
+      })();
+
       document.getElementById('year').textContent = new Date().getFullYear();
     </script>
   </body>
