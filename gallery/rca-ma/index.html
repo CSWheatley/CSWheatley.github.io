@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>RCA MA work — Craig Wheatley</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+      /* Viewport-based fixed height to avoid cropping; images retain proportions */
+      .artwork-overview.full-images .artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+      /* Set a target height based on viewport with a sensible max to avoid huge images */
+      .artwork-overview.full-images .artwork-grid .thumb{height:min(60vh,800px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+      .artwork-overview.full-images .thumb img{height:100%;width:auto;display:block;object-fit:contain}
+      .artwork-overview.full-images figcaption{padding:0.5rem;background:transparent}
+
+      /* Small screens: remove fixed height so content flows naturally */
+      @media (max-width:700px){
+        .artwork-overview.full-images .artwork-grid{grid-template-columns:1fr}
+        .artwork-overview.full-images .artwork-grid .thumb{height:auto}
+        .artwork-overview.full-images .thumb img{height:auto;width:100%}
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">Craig Wheatley</a>
+        <nav class="main-nav">
+          <a href="/">Home</a>
+          <a href="/gallery/">Gallery</a>
+          <a href="/#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <a href="/gallery/" style="display:inline-block;margin-bottom:1rem;">← Back to gallery</a>
+      <h1>RCA MA — selected works</h1>
+
+      <section class="artwork-overview full-images" style="margin-top:1rem">
+        <div class="artwork-grid">
+
+          <figure class="thumb">
+            <img src="/RCA%20MA/Battle%20of%20San%20RamoanoSt%20Fagans%20Part%201%20to%203.jpeg" alt="Battle of San RamoanoSt Fagans Part 1 to 3" style="width:100%;height:auto;display:block">
+            <figcaption>Battle of San RamoanoSt Fagans Part 1 to 3</figcaption>
+          </figure>
+
+          <figure class="thumb">
+            <img src="/RCA%20MA/Activity.jpeg" alt="Activity" style="width:100%;height:auto;display:block">
+            <figcaption>Activity</figcaption>
+          </figure>
+
+        </div>
+
+        <div class="artwork-text" style="margin-top:1.25rem;padding:1rem;border:1px dashed #ddd;border-radius:4px;color:#333;background:#fafafa">
+          <strong>Text placeholder:</strong>
+          <p style="margin-top:0.5rem;color:#444">Add description, provenance, exhibition notes or other text about these works here.</p>
+        </div>
+      </section>
+
+      <p style="margin-top:1.5rem;color:#555">Click an image to open the full version in a new tab.</p>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <small>&copy; <span id="year"></span> Craig Wheatley</small>
+      </div>
+    </footer>
+
+    <script>
+      // Use CSS viewport-based heights to avoid cropping; JS not required.
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
